@@ -12,10 +12,10 @@ def get_classes():
     time.sleep(1)
     inputs[0].click()
     dropdown_data = {}
-    for i in range(len(inputs[0].parent.find_elements_by_class_name('result'))):
+    for i in range(len(inputs[0].find_element_by_xpath('..').find_elements_by_class_name('result'))):
       inputs[0].clear()
       inputs[0].click()
-      res = inputs[0].parent.find_elements_by_class_name('result')[i]
+      res = inputs[0].find_element_by_xpath('..').find_elements_by_class_name('result')[i]
       res_text = res.text.strip()
       if len(res_text) > 0:
         res.click()
@@ -29,3 +29,37 @@ def get_classes():
 
   inputs = browser.find_element_by_class_name('bookRowContainer').find_elements_by_class_name('bncbTextInput')
   return get_dropdown_values(inputs)
+
+def get_books_for_class(lookup_path):
+  browser.get(bookstore_url)
+  while len(browser.find_elements_by_class_name('bookRowContainer')) == 0:
+    time.sleep(1)
+  inputs = browser.find_element_by_class_name('bookRowContainer').find_elements_by_class_name('bncbTextInput')
+  for i in range(len(lookup_path)):
+    inputs[i].click()
+    for res in inputs[i].find_element_by_xpath('..').find_elements_by_class_name('result'):
+      if res.text.strip() == lookup_path[i]:
+        res.click()
+        break
+    time.sleep(0.5)
+
+  browser.find_element_by_id('findMaterialButton').click()
+  while len(browser.find_elements_by_class_name('courseOverView_panel')) == 0:
+    time.sleep(1)
+
+  books = []
+  for book_el in browser.find_elements_by_class_name('book-list'):
+    book_data = {}
+    book_data["title"] = book_el.find_element_by_css_selector('h1 a').text
+    book_data["author"] = book_el.find_element_by_css_selector('h2 i').text
+    book_data["edition"] = ""
+    book_data["isbn"] = ""
+    for strong in book_el.find_elements_by_css_selector('strong'):
+      if "isbn" in strong.text.lower():
+        book_data["isbn"] = strong.find_element_by_xpath('..').text
+      elif "edition" in strong.text.lower():
+        book_data["edition"] = strong.find_element_by_xpath('..').text
+    books.append(book_data)
+  return books
+
+print(get_books_for_class(['AFST', '112', '0']))
