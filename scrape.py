@@ -117,8 +117,10 @@ def get_all_books(data, path=[]):
 # uncomment this to get actual class book data
 # put output from above command into string to get it out
 # classes = """
-# LATN 102 0
-# LATN 243 0
+# AFST 112 0
+# AMST 234 0
+# AMST 345 0
+# ARBC 102 0
 # """.strip().split('\n')
 # for c in classes:
 #   get_books_for_class(c.split(' '))
